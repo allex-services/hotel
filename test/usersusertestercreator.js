@@ -1,4 +1,5 @@
 function createUsersUserTester(execlib,Tester){
+  'use strict';
   var lib = execlib.lib,
       q = lib.q;
 

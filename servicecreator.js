@@ -1,4 +1,5 @@
 function createUsersService(execlib,ParentServicePack){
+  'use strict';
   var lib = execlib.lib,
       ParentService = ParentServicePack.Service,
       dataSuite = execlib.dataSuite;
