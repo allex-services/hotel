@@ -1,13 +1,23 @@
 function createServicePack(execlib){
   'use strict';
-  var execSuite = execlib.execSuite,
-  ServiceCollectionServicePack = execSuite.registry.register('allex_servicecollectionservice'),
-  ParentServicePack = ServiceCollectionServicePack;
+  var lib = execlib.lib,
+    q = lib.q,
+    d = q.defer(),
+    execSuite = execlib.execSuite;
 
-  return {
-    Service: require('./servicecreator')(execlib,ParentServicePack),
-    SinkMap: require('./sinkmapcreator')(execlib,ParentServicePack)
-  };
+  execSuite.registry.register('allex_servicecollectionservice').done(
+    realCreator.bind(null, d),
+    d.reject.bind(d)
+  );
+
+  function realCreator(defer, ParentServicePack){
+    defer.resolve({
+      Service: require('./servicecreator')(execlib,ParentServicePack),
+      SinkMap: require('./sinkmapcreator')(execlib,ParentServicePack)
+    });
+  }
+
+  return d.promise;
 }
 
 module.exports = createServicePack;
