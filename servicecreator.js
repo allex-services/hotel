@@ -12,7 +12,7 @@ function createUsersService(execlib,ParentServicePack){
   }
 
   function UsersService(prophash){
-    prophash.modulename = 'allex_userservice';
+    //prophash.modulename shoud be set through allexlanmanager's needs
     ParentService.call(this,prophash);
     this.supersink = null;
     this.reservations = new lib.Map;
