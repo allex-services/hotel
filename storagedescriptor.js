@@ -3,6 +3,8 @@ module.exports = {
     primaryKey: 'name',
     fields:[{
       name: 'name'
+    },{
+      name: 'role'
     }]
   }
 };

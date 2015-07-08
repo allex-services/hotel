@@ -15,39 +15,21 @@ function createUsersService(execlib,ParentServicePack){
     //prophash.modulename shoud be set through allexlanmanager's needs
     ParentService.call(this,prophash);
     this.supersink = null;
-    this.reservations = new lib.Map;
   }
   ParentService.inherit(UsersService,factoryCreator,require('./storagedescriptor'));
   UsersService.prototype.__cleanUp = function(){
-    if(!this.reservations){
-      return;
-    }
-    this.reservations.destroy();
-    this.reservations = null;
     this.supersink = null;
     ParentService.prototype.__cleanUp.call(this);
   };
-  UsersService.prototype.preProcessUserHash = function(userhash){
-    if(userhash.role==='user'){
-      var username = userhash.name;
-      userhash.filter = {
-        op: 'eq',
-        field: 'name',
-        value: username
+  UsersService.prototype.preProcessUserHash = function (userhash) {
+    if (userhash && userhash.role === 'user' && userhash.profile) {
+      userhash.profile = {
+        name: userhash.name,
+        role: userhash.role,
+        profile: userhash.profile
       };
-      var us = this.subservices.get(username);
-      if(!us){
-        var ur = this.reservations.get(username);
-        if(!ur){
-          this.reservations.add(username,true);
-          this.supersink.call('spawn',userhash).done(
-            this.onSpawnCleanup.bind(this,username),
-            this.onSpawnCleanup.bind(this,username)
-          );
-        }
-      }
     }
-    ParentService.prototype.preProcessUserHash.call(this,userhash);
+    ParentService.prototype.preProcessUserHash.call(this, userhash);
   };
   UsersService.prototype.onSuperSink = function(supersink){
     this.supersink = supersink;
@@ -55,13 +37,6 @@ function createUsersService(execlib,ParentServicePack){
   UsersService.prototype.createStorage = function(storagedescriptor){
     return ParentService.prototype.createStorage.call(this,storagedescriptor);
   };
-  UsersService.prototype.onSpawnCleanup = function(username){
-    this.reservations.remove(username);
-    var u = this.users.get(username);
-    if(u){
-      u.destroy();
-    }
-  }
   return UsersService;
 }
 

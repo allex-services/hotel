@@ -1,5 +1,7 @@
 function createUser(execlib,ParentUser){
   'use strict';
+  var lib = execlib.lib,
+    q = lib.q;
 
   if(!ParentUser){
     ParentUser = execlib.execSuite.ServicePack.Service.prototype.userFactory.get('user');
@@ -7,10 +9,11 @@ function createUser(execlib,ParentUser){
 
   function User(prophash){
     ParentUser.call(this,prophash);
+    this.doTheSpawn(prophash);
   }
   ParentUser.inherit(User,require('../methoddescriptors/user'),[/*visible state fields here*/]/*or a ctor for StateStream filter*/,require('../visiblefields/user'));
-  User.prototype.__cleanUp = function(){
-    ParentUser.prototype.__cleanUp.call(this);
+  User.prototype.doTheSpawn = function (prophash) {
+    this.__service.supersink.call('spawn',prophash.profile);
   };
 
   return User;
