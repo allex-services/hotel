@@ -5,6 +5,8 @@ module.exports = {
       name: 'name'
     },{
       name: 'role'
+    },{
+      name: 'globalsettingsdirsink'
     }]
   }
 };

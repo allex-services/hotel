@@ -15,6 +15,11 @@ function createUsersService(execlib,ParentServicePack){
     //prophash.modulename shoud be set through allexlanmanager's needs
     ParentService.call(this,prophash);
     this.supersink = null;
+    console.log('UsersService',prophash);
+    if (prophash.path) {
+      console.log('startSubServiceStatically!',prophash);
+      this.startSubServiceStatically('allex_directoryservice','project_root',{path:prophash.path});
+    }
   }
   ParentService.inherit(UsersService,factoryCreator,require('./storagedescriptor'));
   UsersService.prototype.__cleanUp = function(){
@@ -22,12 +27,17 @@ function createUsersService(execlib,ParentServicePack){
     ParentService.prototype.__cleanUp.call(this);
   };
   UsersService.prototype.preProcessUserHash = function (userhash) {
+    var project_root;
     if (userhash && userhash.role === 'user' && userhash.profile) {
       userhash.profile = {
         name: userhash.name,
         role: userhash.role,
         profile: userhash.profile
       };
+      project_root = this.subservices.get('project_root');
+      if (project_root) {
+        userhash.profile.globalsettingsdirsink = project_root;
+      }
     }
     ParentService.prototype.preProcessUserHash.call(this, userhash);
   };
