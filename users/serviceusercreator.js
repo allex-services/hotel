@@ -15,12 +15,6 @@ function createServiceUser(execlib,ParentUser){
   ServiceUser.prototype._instanceNameFromRecord = function(record){
     return record.get('name');
   };
-  ServiceUser.prototype._onSinkAcquired = function (defer, record, sink) {
-    if(record.globalsettingsdirsink){
-      record.globalsettingsdirsink = null;
-    }
-    ParentUser.prototype._onSinkAcquired.call(this, defer, record, sink);
-  };
 
   return ServiceUser;
 }

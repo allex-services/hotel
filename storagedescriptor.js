@@ -6,7 +6,7 @@ module.exports = {
     },{
       name: 'role'
     },{
-      name: 'globalsettingsdirsink'
+      name: 'profile'
     }]
   }
 };
