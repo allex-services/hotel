@@ -5,7 +5,7 @@ function createServicePack(execlib){
     d = q.defer(),
     execSuite = execlib.execSuite;
 
-  execSuite.registry.register('allex_servicecollectionservice').done(
+  execSuite.registry.register('allex_servicecontainerservice').done(
     realCreator.bind(null, d),
     d.reject.bind(d)
   );

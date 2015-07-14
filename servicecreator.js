@@ -12,13 +12,18 @@ function createUsersService(execlib,ParentServicePack){
   }
 
   function UsersService(prophash){
-    //prophash.modulename shoud be set through allexlanmanager's needs
+    //prophash.usermodule shoud be set through allexlanmanager's needs
+    if (!(prophash&&prophash.usermodule)) {
+      throw new lib.Error('NO_USERMODULE_IN_PROPERTYHASH','UsersService propertyhash misses the usermodule hash (with namespace and/or basename fields)');
+    }
     ParentService.call(this,prophash);
+    this.usermodule = prophash.usermodule;
     this.supersink = null;
     console.log('UsersService',prophash);
   }
   ParentService.inherit(UsersService,factoryCreator,require('./storagedescriptor'));
   UsersService.prototype.__cleanUp = function(){
+    this.usermodule = null;
     this.supersink = null;
     ParentService.prototype.__cleanUp.call(this);
   };
