@@ -16,6 +16,7 @@ function createServiceUser(execlib,ParentUser){
   ServiceUser.prototype.acquireSink = function(spawndescriptor,defer){
     if(!this.__service.usermodule){
       defer.reject('Service is down');
+      return;
     }
     execSuite.start({
       service:{
