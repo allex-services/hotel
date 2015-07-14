@@ -14,7 +14,7 @@ function createServiceUser(execlib,ParentUser){
     ParentUser.prototype.__cleanUp.call(this);
   };
   ServiceUser.prototype.acquireSink = function(spawndescriptor,defer){
-    if(!this.__service.submodulename){
+    if(!this.__service.usermodule){
       defer.reject('Service is down');
     }
     execSuite.start({
