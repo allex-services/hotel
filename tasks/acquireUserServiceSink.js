@@ -30,14 +30,12 @@ function createAcquireUserServiceSink(execlib){
     });
   };
   AcquireUserServiceSinkTask.prototype.onRecordCreated = function (record) {
-    console.log('got the record',record);
     this.sink.subConnect(record.name,{name:record.name,role:record.role},{}).done(
       this.onAcquired.bind(this),
       this.onAcquireFailed.bind(this)
     );
   };
   AcquireUserServiceSinkTask.prototype.onAcquired = function(sink){
-    console.log('onAcquired',arguments);
     if (this.acquiredDestroyListener) {
       this.acquiredDestroyListener.destroy();
     }
