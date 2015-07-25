@@ -28,12 +28,17 @@ function createUsersService(execlib,ParentServicePack){
     ParentService.prototype.__cleanUp.call(this);
   };
   UsersService.prototype.preProcessUserHash = function (userhash) {
-    if (userhash && userhash.role === 'user' && userhash.profile) {
-      userhash.profile = {
-        name: userhash.name,
-        role: userhash.role,
-        profile: userhash.profile
-      };
+    if (userhash && userhash.role === 'user') {
+      if (userhash.profile) {
+        userhash.profile = {
+          name: userhash.name,
+          role: userhash.role,
+          profile: userhash.profile
+        };
+      } else {
+        userhash.role = null;
+        userhash.name = null;
+      }
     }
     ParentService.prototype.preProcessUserHash.call(this, userhash);
   };

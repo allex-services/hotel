@@ -13,7 +13,11 @@ function createUser(execlib,ParentUser){
   }
   ParentUser.inherit(User,require('../methoddescriptors/user'),[/*visible state fields here*/]/*or a ctor for StateStream filter*/,require('../visiblefields/user'));
   User.prototype.doTheSpawn = function (prophash) {
-    this.__service.supersink.call('spawn',prophash.profile);
+    if (prophash.profile) {
+      this.__service.supersink.call('spawn',prophash.profile);
+    } else {
+      lib.runNext(this.destroy.bind(this));
+    }
   };
 
   return User;
