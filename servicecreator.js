@@ -19,7 +19,6 @@ function createUsersService(execlib,ParentServicePack){
     ParentService.call(this,prophash);
     this.usermodule = prophash.usermodule;
     this.supersink = null;
-    console.log('UsersService',prophash);
   }
   ParentService.inherit(UsersService,factoryCreator,require('./storagedescriptor'));
   UsersService.prototype.__cleanUp = function(){
