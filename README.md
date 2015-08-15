@@ -33,9 +33,12 @@ When a remote user approaches the UsersService, the `preProcessUserHash` will
 constructing the User class name
 
 ### if `namespace` exists
-`allex__namespace_basename<role>service
+`allex__namespace_basenameroleservice
 
 ### if `namespace` does not exist
-`allex_basename<role>service
+`allex_basenameroleservice
+
+Mind the `namespace`, `basename` and `role` in the above strings. These are
+placeholders for the real values of `namespace`, `basename` and `role`.
 
 It is obvious that `basename` _should_ exist for real systems.
