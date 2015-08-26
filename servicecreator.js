@@ -32,7 +32,7 @@ function createUsersService(execlib,ParentServicePack){
       if (userhash.profile) {
         userhash.profile = {
           name: userhash.name,
-          role: userhash.profile.role,
+          role: userhash.role,
           profile: userhash.profile
         };
       } else {

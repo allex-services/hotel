@@ -39,7 +39,7 @@ function createServiceUser(execlib,ParentUser){
       ret += ('_'+this.__service.usermodule.namespace+'_');
     }
     ret += (this.__service.usermodule.basename||'');
-    ret += spawndescriptor.role;
+    ret += spawndescriptor.profile.role;
     ret += 'service';
     return ret;
   };
