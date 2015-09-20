@@ -10,6 +10,7 @@ function createAcquireUserServiceSink(execlib){
     SinkTask.call(this,prophash);
     this.sink = prophash.sink;
     this.cb = prophash.cb;
+    this.propertyhash = prophash.propertyhash || {};
     this.acquiredDestroyListener = null;
   }
   lib.inherit(AcquireUserServiceSinkTask,SinkTask);
@@ -18,6 +19,7 @@ function createAcquireUserServiceSink(execlib){
       this.acquiredDestroyListener.destroy();
     }
     this.acquiredDestroyListener = null;
+    this.propertyhash = null;
     this.cb = null;
     this.sink = null;
     SinkTask.prototype.__cleanUp.call(this);
@@ -30,7 +32,7 @@ function createAcquireUserServiceSink(execlib){
     });
   };
   AcquireUserServiceSinkTask.prototype.onRecordCreated = function (record) {
-    this.sink.subConnect(record.name,{name:record.name,role:record.role},{}).done(
+    this.sink.subConnect(record.name,{name:record.name,role:record.role},this.propertyhash).done(
       this.onAcquired.bind(this),
       this.onAcquireFailed.bind(this)
     );
