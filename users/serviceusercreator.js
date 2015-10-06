@@ -31,7 +31,7 @@ function createServiceUser(execlib,ParentUser){
     );
   };
   ServiceUser.prototype._instanceNameFromRecord = function(record){
-    return record.get('name');
+    return record.get('profile_username');
   };
   ServiceUser.prototype.userModuleName = function (spawndescriptor){
     var ret = 'allex_';
@@ -39,7 +39,7 @@ function createServiceUser(execlib,ParentUser){
       ret += ('_'+this.__service.usermodule.namespace+'_');
     }
     ret += (this.__service.usermodule.basename||'');
-    ret += spawndescriptor.profile.role;
+    ret += spawndescriptor.profile_role;
     ret += 'service';
     return ret;
   };

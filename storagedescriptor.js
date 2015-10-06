@@ -2,11 +2,9 @@ module.exports = {
   record:{
     primaryKey: 'name',
     fields:[{
-      name: 'name'
+      name: 'profile_username'
     },{
-      name: 'role'
-    },{
-      name: 'profile'
+      name: 'profile_role'
     }]
   }
 };

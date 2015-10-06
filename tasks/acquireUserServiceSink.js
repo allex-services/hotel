@@ -32,7 +32,7 @@ function createAcquireUserServiceSink(execlib){
     });
   };
   AcquireUserServiceSinkTask.prototype.onRecordCreated = function (record) {
-    this.sink.subConnect(record.name,{name:record.name,role:record.role},this.propertyhash).done(
+    this.sink.subConnect(record.profile_username,{name:record.profile_username,role:'user'},this.propertyhash).done(
       this.onAcquired.bind(this),
       this.onAcquireFailed.bind(this)
     );

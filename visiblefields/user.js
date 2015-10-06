@@ -1,1 +1,1 @@
-module.exports = ['name', 'role'];
+module.exports = ['profile_username', 'profile_role'];
