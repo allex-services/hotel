@@ -29,7 +29,13 @@ function createUsersService(execlib,ParentServicePack){
   UsersService.prototype.preProcessUserHash = function (userhash) {
     if (userhash && userhash.role === 'user') {
       userhash.filter = {op:'eq', field: 'profile_username', value: userhash.name};
-      if (!userhash.profile) {
+      if (userhash.profile) {
+        userhash.profile = {
+          name: userhash.name,
+          role: userhash.role,
+          profile: userhash.profile
+        };
+      } else {
         userhash.role = null;
         userhash.name = null;
       }

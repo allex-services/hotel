@@ -1,6 +1,9 @@
 function createServiceUser(execlib,ParentUser){
   'use strict';
-  var execSuite = execlib.execSuite;
+  var lib = execlib.lib,
+    q = lib.q,
+    execSuite = execlib.execSuite,
+    dataSuite = execlib.dataSuite;
 
   if(!ParentUser){
     ParentUser = execlib.execSuite.ServicePack.Service.prototype.userFactory.get('user');
@@ -13,7 +16,7 @@ function createServiceUser(execlib,ParentUser){
   ServiceUser.prototype.__cleanUp = function(){
     ParentUser.prototype.__cleanUp.call(this);
   };
-  ServiceUser.prototype.acquireSink = function(spawndescriptor,defer){
+  ServiceUser.prototype.acquireSink = function(spawnrecord, spawndescriptor, defer){
     if(!this.__service.usermodule){
       defer.reject('Service is down');
       return;
@@ -33,13 +36,19 @@ function createServiceUser(execlib,ParentUser){
   ServiceUser.prototype._instanceNameFromRecord = function(record){
     return record.get('profile_username');
   };
+  ServiceUser.prototype._spawnDescriptorToRecord = function (spawndescriptor) {
+    return ParentUser.prototype._spawnDescriptorToRecord.call(this,{
+      profile_username: spawndescriptor.profile.username,
+      profile_role: spawndescriptor.profile.role
+    });
+  };
   ServiceUser.prototype.userModuleName = function (spawndescriptor){
     var ret = 'allex_';
     if(this.__service.usermodule.namespace){
       ret += ('_'+this.__service.usermodule.namespace+'_');
     }
     ret += (this.__service.usermodule.basename||'');
-    ret += spawndescriptor.profile_role;
+    ret += spawndescriptor.profile.role;
     ret += 'service';
     return ret;
   };
