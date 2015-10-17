@@ -113,7 +113,6 @@ function createAcquireUserServiceSink(execlib){
     SinkTask.prototype.__cleanUp.call(this);
   };
   AcquireUserServiceSinkTask.prototype.go = function () {
-    console.log('materializeData krenuo ..');
     taskRegistry.run('materializeData', {
       sink: this.sink,
       data: [],
@@ -121,7 +120,6 @@ function createAcquireUserServiceSink(execlib){
     });
   };
   AcquireUserServiceSinkTask.prototype.onRecordCreated = function (record) {
-    console.log('onRecordCreated ...');
     this.sink.subConnect(record.profile_username,{name:record.profile_username,role:'user'},this.propertyhash).done(
       this.onAcquired.bind(this),
       this.onAcquireFailed.bind(this)
