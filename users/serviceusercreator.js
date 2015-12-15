@@ -52,6 +52,15 @@ function createServiceUser(execlib,ParentUser){
     ret += 'service';
     return ret;
   };
+  ServiceUser.prototype.logout = function (username, defer) {
+    var uss = this.__service.subservices.get(username);
+    if (uss) {
+      uss.destroy();
+      defer.resolve(true);
+    } else {
+      defer.reject (new lib.Error('USERNAME_NOT_FOUND_TO_LOGOUT', username));
+    }
+  };
 
   return ServiceUser;
 }
