@@ -17,11 +17,17 @@ module.exports = createClientSide;
 
 },{"./sinkmapcreator":5,"./tasks/acquireUserServiceSink":9}],3:[function(require,module,exports){
 module.exports = {
+  'logout': [{
+    title: 'Username',
+    type: 'string'
+  }]
 };
 
 },{}],4:[function(require,module,exports){
-arguments[4][3][0].apply(exports,arguments)
-},{"dup":3}],5:[function(require,module,exports){
+module.exports = {
+};
+
+},{}],5:[function(require,module,exports){
 function sinkMapCreator(execlib,ParentServicePack){
   'use strict';
   var sinkmap = new (execlib.lib.Map), ParentSinkMap = ParentServicePack.SinkMap;
