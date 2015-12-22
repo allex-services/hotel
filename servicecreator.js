@@ -7,7 +7,8 @@ function createUsersService(execlib,ParentServicePack){
   function factoryCreator(parentFactory){
     return {
       'service': require('./users/serviceusercreator')(execlib,parentFactory.get('service')),
-      'user': require('./users/usercreator')(execlib,parentFactory.get('user')) 
+      'user': require('./users/usercreator')(execlib,parentFactory.get('user')) ,
+      'monitor': require('./users/monitorusercreator')(execlib,parentFactory.get('user')) 
     };
   }
 
@@ -28,6 +29,10 @@ function createUsersService(execlib,ParentServicePack){
   };
   UsersService.prototype.preProcessUserHash = function (userhash) {
     if (userhash && userhash.role === 'user') {
+      if (!userhash.profile) {
+        console.trace();
+        console.log('daaaaaaaaaaaaaaaaaaaaaaa li smo do ovde stigli?', userhash);
+      }
       userhash.filter = {op:'eq', field: 'profile_username', value: userhash.name};
       if (userhash.profile) {
         userhash.profile = {

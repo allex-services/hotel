@@ -15,7 +15,11 @@ function createClientSide(execlib, ParentServicePack) {
 
 module.exports = createClientSide;
 
-},{"./sinkmapcreator":5,"./tasks/acquireUserServiceSink":9}],3:[function(require,module,exports){
+},{"./sinkmapcreator":6,"./tasks/acquireUserServiceSink":11}],3:[function(require,module,exports){
+module.exports = {
+};
+
+},{}],4:[function(require,module,exports){
 module.exports = {
   'logout': [{
     title: 'Username',
@@ -23,23 +27,42 @@ module.exports = {
   }]
 };
 
-},{}],4:[function(require,module,exports){
-module.exports = {
-};
-
 },{}],5:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],6:[function(require,module,exports){
 function sinkMapCreator(execlib,ParentServicePack){
   'use strict';
   var sinkmap = new (execlib.lib.Map), ParentSinkMap = ParentServicePack.SinkMap;
   sinkmap.add('service',require('./sinks/servicesinkcreator')(execlib,ParentSinkMap.get('service')));
   sinkmap.add('user',require('./sinks/usersinkcreator')(execlib,ParentSinkMap.get('user')));
+  sinkmap.add('monitor',require('./sinks/monitorsinkcreator')(execlib,ParentSinkMap.get('user')));
   
   return sinkmap;
 }
 
 module.exports = sinkMapCreator;
 
-},{"./sinks/servicesinkcreator":6,"./sinks/usersinkcreator":7}],6:[function(require,module,exports){
+},{"./sinks/monitorsinkcreator":7,"./sinks/servicesinkcreator":8,"./sinks/usersinkcreator":9}],7:[function(require,module,exports){
+function createMonitorSink(execlib, ParentSink) {
+  'use strict';
+  if (!ParentSink) {
+    ParentSink = execlib.execSuite.registry.get('.').SinkMap.get('user');
+  }
+
+  function MonitorSink(prophash, client) {
+    ParentSink.call(this, prophash, client);
+  }
+  
+  ParentSink.inherit(MonitorSink, require('../methoddescriptors/monitoruser'), require('../visiblefields/monitoruser'),require('../storagedescriptor'));
+  MonitorSink.prototype.__cleanUp = function () {
+    ParentSink.prototype.__cleanUp.call(this);
+  };
+  return MonitorSink;
+}
+
+module.exports = createMonitorSink;
+
+},{"../methoddescriptors/monitoruser":3,"../storagedescriptor":10,"../visiblefields/monitoruser":12}],8:[function(require,module,exports){
 function createServiceSink(execlib,ParentSink){
   'use strict';
 
@@ -59,7 +82,7 @@ function createServiceSink(execlib,ParentSink){
 
 module.exports = createServiceSink;
 
-},{"../methoddescriptors/serviceuser":3,"../storagedescriptor":8,"../visiblefields/serviceuser":10}],7:[function(require,module,exports){
+},{"../methoddescriptors/serviceuser":4,"../storagedescriptor":10,"../visiblefields/serviceuser":13}],9:[function(require,module,exports){
 function createUserSink(execlib,ParentSink){
   'use strict';
 
@@ -79,7 +102,7 @@ function createUserSink(execlib,ParentSink){
 
 module.exports = createUserSink;
 
-},{"../methoddescriptors/user":4,"../storagedescriptor":8,"../visiblefields/user":11}],8:[function(require,module,exports){
+},{"../methoddescriptors/user":5,"../storagedescriptor":10,"../visiblefields/user":14}],10:[function(require,module,exports){
 module.exports = {
   record:{
     primaryKey: 'profile_username',
@@ -91,7 +114,7 @@ module.exports = {
   }
 };
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function createAcquireUserServiceSink(execlib){
   'use strict';
   var lib = execlib.lib,
@@ -106,15 +129,26 @@ function createAcquireUserServiceSink(execlib){
     this.cb = prophash.cb;
     this.propertyhash = prophash.propertyhash || {};
     this.acquiredDestroyListener = null;
+    this.userSinkDestroyedListener = null;
+    this.attempts = 0;
   }
   lib.inherit(AcquireUserServiceSinkTask,SinkTask);
   AcquireUserServiceSinkTask.prototype.__cleanUp = function () {
+    console.log('AcquireUserServiceSinkTask dying');
+    if (this.userSinkDestroyedListener) {
+      this.userSinkDestroyedListener.destroy();
+    }
+    this.userSinkDestroyedListener = null;
     if (this.acquiredDestroyListener) {
       this.acquiredDestroyListener.destroy();
     }
     this.acquiredDestroyListener = null;
     this.propertyhash = null;
     this.cb = null;
+
+    if (this.sink) {
+      this.sink.destroy();
+    }
     this.sink = null;
     SinkTask.prototype.__cleanUp.call(this);
   };
@@ -126,6 +160,8 @@ function createAcquireUserServiceSink(execlib){
     });
   };
   AcquireUserServiceSinkTask.prototype.onRecordCreated = function (record) {
+    this.attempts++;
+    console.log('trying to subconnect to my apartment', record.profile_username, '#', this.attempts);
     this.sink.subConnect(record.profile_username,{name:record.profile_username,role:'user'},this.propertyhash).done(
       this.onAcquired.bind(this),
       this.onAcquireFailed.bind(this)
@@ -137,9 +173,19 @@ function createAcquireUserServiceSink(execlib){
     }
     this.acquiredDestroyListener = sink.destroyed.attach(this.onAcquiredSinkDown.bind(this));
     this.cb(sink);
+    if (!sink) {
+      console.log('no sink?');
+      this.destroy();
+    } else {
+      if (this.userSinkDestroyedListener) {
+        this.userSinkDestroyedListener.destroy();
+      }
+      this.userSinkDestroyedListener = sink.destroyed.attach(this.destroy.bind(this));
+    }
   };
   AcquireUserServiceSinkTask.prototype.onAcquireFailed = function (reason) {
     console.log('onAcquireFailed',arguments);
+    this.destroy();
   };
   AcquireUserServiceSinkTask.prototype.onAcquiredSinkDown = function () {
     this.cb(null);
@@ -151,9 +197,11 @@ function createAcquireUserServiceSink(execlib){
 
 module.exports = createAcquireUserServiceSink;
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = ['profile_username', 'profile_role'];
 
-},{}],11:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}]},{},[1]);
+},{}],13:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dup":12}],14:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dup":12}]},{},[1]);
