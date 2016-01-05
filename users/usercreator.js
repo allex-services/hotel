@@ -10,8 +10,16 @@ function createUser(execlib,ParentUser){
   function User(prophash){
     ParentUser.call(this,prophash);
     this.doTheSpawn(prophash);
+    this.apartmentDestroyedListener = null;
   }
   ParentUser.inherit(User,require('../methoddescriptors/user'),[/*visible state fields here*/]/*or a ctor for StateStream filter*/,require('../visiblefields/user'));
+  User.prototype.__cleanUp = function () {
+    if (this.apartmentDestroyedListener) {
+      this.apartmentDestroyedListener.destroy();
+    }
+    this.apartmentDestroyedListener = null;
+    ParentUser.prototype.__cleanUp.call(this);
+  };
   User.prototype.doTheSpawn = function (prophash) {
     var stdp = this.startTheDyingProcedure.bind(this);
     if (prophash.profile) {
@@ -28,7 +36,7 @@ function createUser(execlib,ParentUser){
     if (!(sink && sink.destroyed)) {
       this.startTheDyingProcedure();
     } else {
-      sink.destroyed.attachForSingleShot(this.startTheDyingProcedure.bind(this));
+      this.apartmentDestroyedListener = sink.destroyed.attach(this.startTheDyingProcedure.bind(this));
     }
   };
 
