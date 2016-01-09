@@ -1,6 +1,8 @@
 function createUsersService(execlib,ParentServicePack){
   'use strict';
   var lib = execlib.lib,
+      q = lib.q,
+      qlib = lib.qlib,
       ParentService = ParentServicePack.Service,
       dataSuite = execlib.dataSuite;
 
@@ -52,6 +54,13 @@ function createUsersService(execlib,ParentServicePack){
   };
   UsersService.prototype.createStorage = function(storagedescriptor){
     return ParentService.prototype.createStorage.call(this,storagedescriptor);
+  };
+  UsersService.prototype.tellApartment = function (apartmentname, method, args) {
+    var apartmentsink = this.subservices.get(apartmentname);
+    if (!apartmentsink) {
+      return q.reject(new lib.Error('NO_APARTMENT_FOUND', apartmentname));
+    }
+    return apartmentsink.call.apply(apartmentsink, [method].concat(args));
   };
   return UsersService;
 }
