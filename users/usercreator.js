@@ -32,7 +32,7 @@ function createUser(execlib,ParentUser){
     }
   };
   User.prototype.onSpawned = function (sink) {
-    console.log('user spawned', sink);
+    //console.log('user spawned', sink);
     if (!(sink && sink.destroyed)) {
       this.startTheDyingProcedure();
     } else {
