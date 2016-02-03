@@ -37,13 +37,6 @@ function createServiceUser(execlib,ParentUser){
   ServiceUser.prototype._instanceNameFromRecord = function(record){
     return record.get('profile_username');
   };
-  ServiceUser.prototype._deleteFilterForRecord = function (sinkinstancename, record) {
-    return {
-      op:'eq',
-      field:'profile_username',
-      value:sinkinstancename
-    };
-  };
   ServiceUser.prototype._spawnDescriptorToRecord = function (spawndescriptor) {
     return ParentUser.prototype._spawnDescriptorToRecord.call(this,{
       profile_username: spawndescriptor.profile.username,

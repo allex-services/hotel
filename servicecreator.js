@@ -49,6 +49,13 @@ function createUsersService(execlib,ParentServicePack){
     }
     ParentService.prototype.preProcessUserHash.call(this, userhash);
   };
+  UsersService.prototype._deleteFilterForRecord = function (sinkinstancename, record) {
+    return {
+      op:'eq',
+      field:'profile_username',
+      value:sinkinstancename
+    };
+  };
   UsersService.prototype.onSuperSink = function(supersink){
     this.supersink = supersink;
   };
