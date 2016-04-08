@@ -36,8 +36,9 @@ function createAcquireUserServiceSink(execlib){
     SinkTask.prototype.__cleanUp.call(this);
   };
   AcquireUserServiceSinkTask.prototype.go = function () {
-    taskRegistry.run('materializeData', {
+    taskRegistry.run('materializeQuery', {
       sink: this.sink,
+      continuous: true,
       data: [],
       onRecordCreation: this.onRecordCreated.bind(this)
     });
