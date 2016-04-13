@@ -29,26 +29,6 @@ function createUsersService(execlib,ParentServicePack){
     this.supersink = null;
     ParentService.prototype.__cleanUp.call(this);
   };
-  UsersService.prototype.preProcessUserHash = function (userhash) {
-    if (userhash && userhash.role === 'user') {
-      if (!userhash.profile) {
-        console.trace();
-        console.log('daaaaaaaaaaaaaaaaaaaaaaa li smo do ovde stigli?', userhash);
-      }
-      userhash.filter = {op:'eq', field: 'profile_username', value: userhash.name};
-      if (userhash.profile) {
-        userhash.profile = {
-          name: userhash.name,
-          role: userhash.role,
-          profile: userhash.profile
-        };
-      } else {
-        userhash.role = null;
-        userhash.name = null;
-      }
-    }
-    ParentService.prototype.preProcessUserHash.call(this, userhash);
-  };
   UsersService.prototype._deleteFilterForRecord = function (sinkinstancename, record) {
     return {
       op:'eq',

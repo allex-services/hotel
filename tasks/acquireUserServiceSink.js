@@ -36,22 +36,20 @@ function createAcquireUserServiceSink(execlib){
     SinkTask.prototype.__cleanUp.call(this);
   };
   AcquireUserServiceSinkTask.prototype.go = function () {
-    taskRegistry.run('materializeQuery', {
-      sink: this.sink,
-      continuous: true,
-      data: [],
-      onRecordCreation: this.onRecordCreated.bind(this)
-    });
+    this.sink.call('waitForApartment').then(
+      this.onSelfApartment.bind(this)
+    );
   };
-  AcquireUserServiceSinkTask.prototype.onRecordCreated = function (record) {
+  AcquireUserServiceSinkTask.prototype.onSelfApartment = function (selfname) {
     this.attempts++;
-    console.log('trying to subconnect to my apartment', record.profile_username, '#', this.attempts);
-    this.sink.subConnect(record.profile_username,{name:record.profile_username,role:'user'},this.propertyhash).done(
+    console.log('trying to subconnect to my apartment', selfname, '#', this.attempts);
+    this.sink.subConnect(selfname,{name:selfname,role:'user'},this.propertyhash).done(
       this.onAcquired.bind(this),
       this.onAcquireFailed.bind(this)
     );
   };
   AcquireUserServiceSinkTask.prototype.onAcquired = function(sink){
+    console.log('ok');
     if (this.acquiredDestroyListener) {
       this.acquiredDestroyListener.destroy();
     }

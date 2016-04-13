@@ -17,7 +17,6 @@ function createServiceUser(execlib,ParentUser){
     ParentUser.prototype.__cleanUp.call(this);
   };
   ServiceUser.prototype.acquireSink = function(spawnrecord, spawndescriptor, defer){
-    console.log('Users will acquireSink', spawndescriptor);
     if(!this.__service.usermodule){
       defer.reject('Service is down');
       return;
