@@ -1,7 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 ALLEX.execSuite.registry.registerClientSide("allex_usersservice",require('./sinkmapcreator')(ALLEX, ALLEX.execSuite.registry.getClientSide('allex_servicecollectionservice')));
+ALLEX.execSuite.taskRegistry.register("allex_usersservice",require('./taskcreator')(ALLEX));
 
-},{"./sinkmapcreator":5}],2:[function(require,module,exports){
+},{"./sinkmapcreator":5,"./taskcreator":10}],2:[function(require,module,exports){
 module.exports = {
   tellApartment:[{
     title: 'Apartment name',
@@ -61,7 +62,7 @@ function createMonitorSink(execlib, ParentSink) {
 
 module.exports = createMonitorSink;
 
-},{"../methoddescriptors/monitoruser":2,"../storagedescriptor":9,"../visiblefields/monitoruser":10}],7:[function(require,module,exports){
+},{"../methoddescriptors/monitoruser":2,"../storagedescriptor":9,"../visiblefields/monitoruser":12}],7:[function(require,module,exports){
 function createServiceSink(execlib,ParentSink){
   'use strict';
 
@@ -81,7 +82,7 @@ function createServiceSink(execlib,ParentSink){
 
 module.exports = createServiceSink;
 
-},{"../methoddescriptors/serviceuser":3,"../storagedescriptor":9,"../visiblefields/serviceuser":11}],8:[function(require,module,exports){
+},{"../methoddescriptors/serviceuser":3,"../storagedescriptor":9,"../visiblefields/serviceuser":13}],8:[function(require,module,exports){
 function createUserSink(execlib,ParentSink){
   'use strict';
 
@@ -101,7 +102,7 @@ function createUserSink(execlib,ParentSink){
 
 module.exports = createUserSink;
 
-},{"../methoddescriptors/user":4,"../storagedescriptor":9,"../visiblefields/user":12}],9:[function(require,module,exports){
+},{"../methoddescriptors/user":4,"../storagedescriptor":9,"../visiblefields/user":14}],9:[function(require,module,exports){
 module.exports = {
   record:{
     primaryKey: 'profile_username',
@@ -114,10 +115,103 @@ module.exports = {
 };
 
 },{}],10:[function(require,module,exports){
+function createTasks(execlib) {
+  'use strict';
+  return [{
+    name: 'acquireUserServiceSink',
+    klass: require('./tasks/acquireUserServiceSink')(execlib)
+  }];
+}
+
+module.exports = createTasks;
+
+},{"./tasks/acquireUserServiceSink":11}],11:[function(require,module,exports){
+function createAcquireUserServiceSink(execlib){
+  'use strict';
+  var lib = execlib.lib,
+    q = lib.q,
+    execSuite = execlib.execSuite,
+    SinkTask = execSuite.SinkTask,
+    taskRegistry = execSuite.taskRegistry;
+
+  function AcquireUserServiceSinkTask(prophash) {
+    SinkTask.call(this,prophash);
+    this.sink = prophash.sink;
+    this.cb = prophash.cb;
+    this.propertyhash = prophash.propertyhash || {};
+    this.acquiredDestroyListener = null;
+    this.userSinkDestroyedListener = null;
+    this.attempts = 0;
+  }
+  lib.inherit(AcquireUserServiceSinkTask,SinkTask);
+  AcquireUserServiceSinkTask.prototype.__cleanUp = function () {
+    console.log('AcquireUserServiceSinkTask dying');
+    if (this.userSinkDestroyedListener) {
+      this.userSinkDestroyedListener.destroy();
+    }
+    this.userSinkDestroyedListener = null;
+    if (this.acquiredDestroyListener) {
+      this.acquiredDestroyListener.destroy();
+    }
+    this.acquiredDestroyListener = null;
+    this.propertyhash = null;
+    this.cb = null;
+
+    if (this.sink) {
+      this.sink.destroy();
+    }
+    this.sink = null;
+    SinkTask.prototype.__cleanUp.call(this);
+  };
+  AcquireUserServiceSinkTask.prototype.go = function () {
+    this.sink.call('waitForApartment').then(
+      this.onSelfApartment.bind(this)
+    );
+  };
+  AcquireUserServiceSinkTask.prototype.onSelfApartment = function (selfname) {
+    this.attempts++;
+    console.log('trying to subconnect to my apartment', selfname, '#', this.attempts);
+    this.sink.subConnect(selfname,{name:selfname,role:'user'},this.propertyhash).done(
+      this.onAcquired.bind(this),
+      this.onAcquireFailed.bind(this)
+    );
+  };
+  AcquireUserServiceSinkTask.prototype.onAcquired = function(sink){
+    console.log('ok');
+    if (this.acquiredDestroyListener) {
+      this.acquiredDestroyListener.destroy();
+    }
+    this.acquiredDestroyListener = sink.destroyed.attach(this.onAcquiredSinkDown.bind(this));
+    this.cb(sink);
+    if (!sink) {
+      console.log('no sink?');
+      this.destroy();
+    } else {
+      if (this.userSinkDestroyedListener) {
+        this.userSinkDestroyedListener.destroy();
+      }
+      this.userSinkDestroyedListener = sink.destroyed.attach(this.destroy.bind(this));
+    }
+  };
+  AcquireUserServiceSinkTask.prototype.onAcquireFailed = function (reason) {
+    console.log('onAcquireFailed',arguments);
+    this.destroy();
+  };
+  AcquireUserServiceSinkTask.prototype.onAcquiredSinkDown = function () {
+    this.cb(null);
+  };
+  AcquireUserServiceSinkTask.prototype.compulsoryConstructionProperties = ['sink', 'cb'];
+
+  return AcquireUserServiceSinkTask;
+}
+
+module.exports = createAcquireUserServiceSink;
+
+},{}],12:[function(require,module,exports){
 module.exports = ['profile_username', 'profile_role'];
 
-},{}],11:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}],12:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"dup":10}]},{},[1]);
+},{}],13:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dup":12}],14:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dup":12}]},{},[1]);
