@@ -1,9 +1,8 @@
-function createUsersService(execlib,ParentServicePack){
+function createUsersService(execlib,ParentService){
   'use strict';
   var lib = execlib.lib,
       q = lib.q,
       qlib = lib.qlib,
-      ParentService = ParentServicePack.Service,
       dataSuite = execlib.dataSuite;
 
   function factoryCreator(parentFactory){
