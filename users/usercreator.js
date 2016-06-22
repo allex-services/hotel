@@ -49,8 +49,10 @@ function createUser(execlib,ParentUser){
       defer.reject(new lib.Error('NO_APARTMENT_NAME_TO_FIND'));
       return;
     }
-    console.log('will wait for subservice', name);
-    this.__service.subservices.listenFor(name, defer.resolve.bind(defer, name), true, true);
+    this.__service.subservices.waitFor(name).then(
+      defer.resolve.bind(defer, name),
+      defer.reject.bind(defer)
+    );
   };
 
   return User;
