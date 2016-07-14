@@ -17,7 +17,7 @@ function createAcquireUserServiceSink(execlib){
   }
   lib.inherit(AcquireUserServiceSinkTask,SinkTask);
   AcquireUserServiceSinkTask.prototype.__cleanUp = function () {
-    console.log('AcquireUserServiceSinkTask dying');
+    //console.log('AcquireUserServiceSinkTask dying');
     if (this.userSinkDestroyedListener) {
       this.userSinkDestroyedListener.destroy();
     }
@@ -42,14 +42,14 @@ function createAcquireUserServiceSink(execlib){
   };
   AcquireUserServiceSinkTask.prototype.onSelfApartment = function (selfname) {
     this.attempts++;
-    console.log('trying to subconnect to my apartment', selfname, '#', this.attempts);
+    //console.log('trying to subconnect to my apartment', selfname, '#', this.attempts);
     this.sink.subConnect(selfname,{name:selfname,role:'user'},this.propertyhash).done(
       this.onAcquired.bind(this),
       this.onAcquireFailed.bind(this)
     );
   };
   AcquireUserServiceSinkTask.prototype.onAcquired = function(sink){
-    console.log('ok');
+    //console.log('ok');
     if (this.acquiredDestroyListener) {
       this.acquiredDestroyListener.destroy();
     }
