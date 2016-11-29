@@ -32,10 +32,13 @@ function createServiceUser(execlib,ParentUser){
     return record.get('profile_username');
   };
   ServiceUser.prototype._spawnDescriptorToRecord = function (spawndescriptor) {
-    return ParentUser.prototype._spawnDescriptorToRecord.call(this,{
+    return ParentUser.prototype._spawnDescriptorToRecord.call(this,this.exposedUserRecord(spawndescriptor));
+  };
+  ServiceUser.prototype.exposedUserRecord = function (spawndescriptor) {
+    return {
       profile_username: spawndescriptor.profile.username,
       profile_role: spawndescriptor.profile.role
-    });
+    };
   };
   ServiceUser.prototype.userModuleName = function (spawndescriptor){
     var ret = 'allex_';
