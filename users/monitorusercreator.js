@@ -9,6 +9,7 @@ function createMonitorUser(execlib, ParentUser) {
 
   function MonitorUser(prophash) {
     ParentUser.call(this, prophash);
+    lib.runNext(this.doStats.bind(this));
   }
   
   ParentUser.inherit(MonitorUser, require('../methoddescriptors/monitoruser'), [/*visible state fields here*/]/*or a ctor for StateStream filter*/, require('../visiblefields/monitoruser'));
@@ -17,6 +18,13 @@ function createMonitorUser(execlib, ParentUser) {
   };
   MonitorUser.prototype.tellApartment = function (apartmentname, method, args, defer) {
     qlib.promise2defer(this.__service.tellApartment(apartmentname, method, args), defer);
+  };
+  MonitorUser.prototype.doStats = function () {
+    if (!this.__service) {
+      return;
+    }
+    this.state.set('usercount', this.__service.subservices._instanceMap.count);
+    lib.runNext(this.doStats.bind(this), 10*lib.intervals.Second);
   };
   MonitorUser.prototype.role = 'monitor';
 
