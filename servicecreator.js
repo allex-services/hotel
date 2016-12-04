@@ -3,6 +3,8 @@ function createUsersService(execlib,ParentService){
   var lib = execlib.lib,
       q = lib.q,
       qlib = lib.qlib,
+      execSuite = execlib.execSuite,
+      RemoteServiceListenerServiceMixin = execSuite.RemoteServiceListenerServiceMixin,
       dataSuite = execlib.dataSuite;
 
   function factoryCreator(parentFactory){
@@ -19,13 +21,22 @@ function createUsersService(execlib,ParentService){
       throw new lib.Error('NO_USERMODULE_IN_PROPERTYHASH','UsersService propertyhash misses the usermodule hash (with namespace and/or basename fields)');
     }
     ParentService.call(this,prophash);
+    RemoteServiceListenerServiceMixin.call(this);
     this.usermodule = prophash.usermodule;
     this.supersink = null;
+
+    if (prophash.resolvername) {
+      console.log('ocem li ga potraziti?', prophash.resolvername);
+      this.findRemote(prophash.resolvername, prophash.resolveridentity || null, 'Resolver');
+    }
   }
   ParentService.inherit(UsersService,factoryCreator,require('./storagedescriptor'));
+  RemoteServiceListenerServiceMixin.addMethods(UsersService);
+
   UsersService.prototype.__cleanUp = function(){
     this.usermodule = null;
     this.supersink = null;
+    RemoteServiceListenerServiceMixin.prototype.destroy.call(this);
     ParentService.prototype.__cleanUp.call(this);
   };
   UsersService.prototype._deleteFilterForRecord = function (sinkinstancename, record) {
@@ -48,6 +59,10 @@ function createUsersService(execlib,ParentService){
     }
     return apartmentsink.call.apply(apartmentsink, [method].concat(args));
   };
+
+  UsersService.prototype.executeOnResolver = execSuite.dependentServiceMethod([], ['Resolver'], function (rs, methodname_with_args, defer) {
+    qlib.promise2defer (rs.call.apply(rs, methodname_with_args), defer);
+  });
   return UsersService;
 }
 

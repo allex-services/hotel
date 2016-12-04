@@ -20,6 +20,7 @@ function createServiceUser(execlib,ParentUser){
     if(!this.__service.usermodule){
       return q.reject(new lib.Error('SERVICE_DOWN'));
     }
+    spawndescriptor.__hotel = this.__service;
     return execSuite.start({
       service:{
         modulename: this.userModuleName(spawndescriptor),
