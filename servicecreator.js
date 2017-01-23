@@ -23,7 +23,16 @@ function createUsersService(execlib,ParentService){
     ParentService.call(this,prophash);
     RemoteServiceListenerServiceMixin.call(this);
     this.usermodule = prophash.usermodule;
+    this.clusterOutPath = null;
     this.supersink = null;
+
+    if (prophash.clusteroutpath) {
+      if (!lib.isArray(prophash.clusteroutpath)) {
+        this.clusterOutPath = [{name: prophash.clusteroutpath, identity: {name: 'user', role: 'user'}}];
+      } else {
+        this.clusterOutPath = prophash.clusteroutpath;
+      }
+    }
 
     if (prophash.resolvername) {
       console.log('ocem li ga potraziti?', prophash.resolvername);
@@ -35,6 +44,7 @@ function createUsersService(execlib,ParentService){
 
   UsersService.prototype.__cleanUp = function(){
     this.usermodule = null;
+    this.clusterOutPath = null;
     this.supersink = null;
     RemoteServiceListenerServiceMixin.prototype.destroy.call(this);
     ParentService.prototype.__cleanUp.call(this);
@@ -52,6 +62,17 @@ function createUsersService(execlib,ParentService){
   UsersService.prototype.createStorage = function(storagedescriptor){
     return ParentService.prototype.createStorage.call(this,storagedescriptor);
   };
+  UsersService.prototype.clusterDependentRemotePath = function (path) {
+    if (this.clusterOutPath) {
+      if (!lib.isArray(path)) {
+        return this.clusterOutPath.concat([path]);
+      } else {
+        return this.clusterOutPath.concat(path);
+      }
+    }
+    return path;
+  };
+
   UsersService.prototype.tellApartment = function (apartmentname, method, args) {
     var apartmentsink = this.subservices.get(apartmentname);
     if (!apartmentsink) {
