@@ -1,4 +1,4 @@
-# UsersService
+# HotelService
 AllexJS Service that is a specialization of `allex_servicecollectionservice`.
 
 It creates an instance of an appropriate User class (in accordance to
@@ -24,7 +24,7 @@ filter that will filter out just the User's personalized Service.
   }
 }
 ```
-When a remote user approaches the UsersService, the `preProcessUserHash` will 
+When a remote user approaches the HotelService, the `preProcessUserHash` will 
 
 - check for existence of the `profile` key in the provided `userhash`
 - if no `profile` is found, the user will be blocked by setting its `name` and

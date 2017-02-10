@@ -3,7 +3,7 @@ var execlib=require('hers_exectesting')();
 execlib.test({
   debug_brk: false,
   debug: false,
-  name:'Users',
+  name:'Hotel',
   modulepath:'./index.js',
   propertyhash: {
   }

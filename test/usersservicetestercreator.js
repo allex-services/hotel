@@ -1,16 +1,16 @@
-function createUsersServiceTester(execlib,Tester){
+function createHotelServiceTester(execlib,Tester){
   'use strict';
   var lib = execlib.lib,
       q = lib.q;
 
-  function UsersServiceTester(prophash,client){
+  function HotelServiceTester(prophash,client){
     Tester.call(this,prophash,client);
     console.log('runNext finish');
     lib.runNext(this.finish.bind(this,0));
   }
-  lib.inherit(UsersServiceTester,Tester);
+  lib.inherit(HotelServiceTester,Tester);
 
-  return UsersServiceTester;
+  return HotelServiceTester;
 }
 
-module.exports = createUsersServiceTester;
+module.exports = createHotelServiceTester;

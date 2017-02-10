@@ -1,4 +1,4 @@
-function createUsersService(execlib,ParentService){
+function createHotelService(execlib,ParentService){
   'use strict';
   var lib = execlib.lib,
       q = lib.q,
@@ -15,10 +15,10 @@ function createUsersService(execlib,ParentService){
     };
   }
 
-  function UsersService(prophash){
+  function HotelService(prophash){
     //prophash.usermodule shoud be set through allexlanmanager's needs
     if (!(prophash&&prophash.usermodule)) {
-      throw new lib.Error('NO_USERMODULE_IN_PROPERTYHASH','UsersService propertyhash misses the usermodule hash (with namespace and/or basename fields)');
+      throw new lib.Error('NO_USERMODULE_IN_PROPERTYHASH','HotelService propertyhash misses the usermodule hash (with namespace and/or basename fields)');
     }
     ParentService.call(this,prophash);
     RemoteServiceListenerServiceMixin.call(this);
@@ -39,30 +39,30 @@ function createUsersService(execlib,ParentService){
       this.findRemote(prophash.resolvername, prophash.resolveridentity || null, 'Resolver');
     }
   }
-  ParentService.inherit(UsersService,factoryCreator,require('./storagedescriptor'));
-  RemoteServiceListenerServiceMixin.addMethods(UsersService);
+  ParentService.inherit(HotelService,factoryCreator,require('./storagedescriptor'));
+  RemoteServiceListenerServiceMixin.addMethods(HotelService);
 
-  UsersService.prototype.__cleanUp = function(){
+  HotelService.prototype.__cleanUp = function(){
     this.usermodule = null;
     this.clusterOutPath = null;
     this.supersink = null;
     RemoteServiceListenerServiceMixin.prototype.destroy.call(this);
     ParentService.prototype.__cleanUp.call(this);
   };
-  UsersService.prototype._deleteFilterForRecord = function (sinkinstancename, record) {
+  HotelService.prototype._deleteFilterForRecord = function (sinkinstancename, record) {
     return {
       op:'eq',
       field:'profile_username',
       value:sinkinstancename
     };
   };
-  UsersService.prototype.onSuperSink = function(supersink){
+  HotelService.prototype.onSuperSink = function(supersink){
     this.supersink = supersink;
   };
-  UsersService.prototype.createStorage = function(storagedescriptor){
+  HotelService.prototype.createStorage = function(storagedescriptor){
     return ParentService.prototype.createStorage.call(this,storagedescriptor);
   };
-  UsersService.prototype.clusterDependentRemotePath = function (path) {
+  HotelService.prototype.clusterDependentRemotePath = function (path) {
     if (this.clusterOutPath) {
       if (!lib.isArray(path)) {
         return this.clusterOutPath.concat([path]);
@@ -73,7 +73,7 @@ function createUsersService(execlib,ParentService){
     return path;
   };
 
-  UsersService.prototype.tellApartment = function (apartmentname, method, args) {
+  HotelService.prototype.tellApartment = function (apartmentname, method, args) {
     var apartmentsink = this.subservices.get(apartmentname);
     if (!apartmentsink) {
       return q.reject(new lib.Error('NO_APARTMENT_FOUND', apartmentname));
@@ -81,10 +81,10 @@ function createUsersService(execlib,ParentService){
     return apartmentsink.call.apply(apartmentsink, [method].concat(args));
   };
 
-  UsersService.prototype.executeOnResolver = execSuite.dependentServiceMethod([], ['Resolver'], function (rs, methodname_with_args, defer) {
+  HotelService.prototype.executeOnResolver = execSuite.dependentServiceMethod([], ['Resolver'], function (rs, methodname_with_args, defer) {
     qlib.promise2defer (rs.call.apply(rs, methodname_with_args), defer);
   });
-  return UsersService;
+  return HotelService;
 }
 
-module.exports = createUsersService;
+module.exports = createHotelService;
