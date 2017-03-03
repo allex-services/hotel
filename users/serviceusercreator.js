@@ -2,6 +2,7 @@ function createServiceUser(execlib,ParentUser){
   'use strict';
   var lib = execlib.lib,
     q = lib.q,
+    qlib = lib.qlib,
     execSuite = execlib.execSuite,
     dataSuite = execlib.dataSuite;
 
@@ -52,13 +53,7 @@ function createServiceUser(execlib,ParentUser){
     return ret;
   };
   ServiceUser.prototype.logout = function (username, defer) {
-    var uss = this.__service.subservices.get(username);
-    if (uss) {
-      uss.destroy();
-      defer.resolve(true);
-    } else {
-      defer.reject (new lib.Error('USERNAME_NOT_FOUND_TO_LOGOUT', username));
-    }
+    qlib.promise2defer(this.__service.logout(username), defer);
   };
 
   return ServiceUser;

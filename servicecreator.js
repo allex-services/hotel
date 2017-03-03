@@ -84,6 +84,16 @@ function createHotelService(execlib,ParentService){
   HotelService.prototype.executeOnResolver = execSuite.dependentServiceMethod([], ['Resolver'], function (rs, methodname_with_args, defer) {
     qlib.promise2defer (rs.call.apply(rs, methodname_with_args), defer);
   });
+
+  HotelService.prototype.logout = function (username) {
+    var uss = this.subservices.get(username);
+    if (uss) {
+      uss.destroy();
+      return q(true);
+    }
+    return q.reject (new lib.Error('USERNAME_NOT_FOUND_TO_LOGOUT', username));
+  };
+
   return HotelService;
 }
 
