@@ -58,6 +58,7 @@ function createHotelService(execlib,ParentService){
   };
   HotelService.prototype.onSuperSink = function(supersink){
     this.supersink = supersink;
+    return ParentService.prototype.onSuperSink.call(this, supersink);
   };
   HotelService.prototype.createStorage = function(storagedescriptor){
     return ParentService.prototype.createStorage.call(this,storagedescriptor);
