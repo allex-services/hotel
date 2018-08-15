@@ -37,6 +37,12 @@ function createServiceUser(execlib,ParentUser){
     return ParentUser.prototype._spawnDescriptorToRecord.call(this,this.exposedUserRecord(spawndescriptor));
   };
   ServiceUser.prototype.exposedUserRecord = function (spawndescriptor) {
+    if (!(spawndescriptor && spawndescriptor.profile)) {
+      return {
+        profile_username: '',
+        profile_role: ''
+      };
+    }
     return {
       profile_username: spawndescriptor.profile.username,
       profile_role: spawndescriptor.profile.role
