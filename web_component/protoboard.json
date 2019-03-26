@@ -2,6 +2,9 @@
   "browserify": {
     "dist/browserified.js":"../browserify.js"
   },
+  "dependencies": {
+    "js": ["allex:servicecollection"]
+  },
   "protoboard": {
     "role":"web_component"
   }
