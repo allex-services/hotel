@@ -3,8 +3,7 @@ function createAcquireUserServiceSink(execlib){
   var lib = execlib.lib,
     q = lib.q,
     execSuite = execlib.execSuite,
-    SinkTask = execSuite.SinkTask,
-    taskRegistry = execSuite.taskRegistry;
+    SinkTask = execSuite.SinkTask;
 
   function AcquireUserServiceSinkTask(prophash) {
     SinkTask.call(this,prophash);
@@ -36,7 +35,6 @@ function createAcquireUserServiceSink(execlib){
     );
   };
   AcquireUserServiceSinkTask.prototype.onAcquired = function(sink){
-    //console.log('ok');
     if (this.cb) {
       this.cb(sink);
       if (!sink) {
