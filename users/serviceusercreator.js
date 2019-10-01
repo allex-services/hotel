@@ -18,13 +18,18 @@ function createServiceUser(execlib,ParentUser){
     ParentUser.prototype.__cleanUp.call(this);
   };
   ServiceUser.prototype.acquireSink = function(spawnrecord, spawndescriptor){
+    var usermodulename;
     if(!this.__service.usermodule){
       return q.reject(new lib.Error('SERVICE_DOWN'));
+    }
+    usermodulename = this.userModuleName(spawndescriptor);
+    if (!usermodulename) {
+      return q.reject(new lib.Error('LOGIN_NOT_ALLOWED', 'No apartment modulename for '+JSON.stringify(spawndescriptor)));
     }
     spawndescriptor.__hotel = this.__service;
     return execSuite.start({
       service:{
-        modulename: this.userModuleName(spawndescriptor),
+        modulename: usermodulename,
         instancename: this.__service.global ? spawndescriptor.instancename : null,
         propertyhash: spawndescriptor
       }

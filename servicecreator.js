@@ -23,6 +23,7 @@ function createHotelService(execlib,ParentService){
     ParentService.call(this,prophash);
     RemoteServiceListenerServiceMixin.call(this);
     this.usermodule = prophash.usermodule;
+    this.userprophash = prophash.userpropertyhash;
     this.clusterOutPath = null;
     this.supersink = null;
 
@@ -35,7 +36,6 @@ function createHotelService(execlib,ParentService){
     }
 
     if (prophash.resolvername) {
-      console.log('ocem li ga potraziti?', prophash.resolvername);
       this.findRemote(prophash.resolvername, prophash.resolveridentity || null, 'Resolver');
     }
   }
@@ -43,9 +43,10 @@ function createHotelService(execlib,ParentService){
   RemoteServiceListenerServiceMixin.addMethods(HotelService);
 
   HotelService.prototype.__cleanUp = function(){
-    this.usermodule = null;
-    this.clusterOutPath = null;
     this.supersink = null;
+    this.clusterOutPath = null;
+    this.userprophash = null;
+    this.usermodule = null;
     RemoteServiceListenerServiceMixin.prototype.destroy.call(this);
     ParentService.prototype.__cleanUp.call(this);
   };
@@ -93,6 +94,14 @@ function createHotelService(execlib,ParentService){
       return q(true);
     }
     return q.reject (new lib.Error('USERNAME_NOT_FOUND_TO_LOGOUT', username));
+  };
+
+  HotelService.prototype.outerName2ApartmentName = function (outername) {
+    return outername;
+  };
+
+  HotelService.prototype.apartmentName2OuterName = function (apartmentname) {
+    return apartmentname;
   };
 
   return HotelService;
