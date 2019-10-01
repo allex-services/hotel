@@ -54,7 +54,7 @@ function createServiceUser(execlib,ParentUser){
     };
   };
   ServiceUser.prototype.userModuleName = function (spawndescriptor){
-    var ret = 'allex_';
+    var ret = (this.__service.usermodule.username||'allex') + '_';
     if(this.__service.usermodule.namespace){
       ret += ('_'+this.__service.usermodule.namespace+'_');
     }

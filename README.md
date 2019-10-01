@@ -19,6 +19,7 @@ filter that will filter out just the User's personalized Service.
 ```javascript
 {...
   usermodule: {
+    username: 'someusername_or_blankstring',
     namespace: 'somenamespace_or_blankstring',
     basename: 'somebasename_of_blankstring'
   }
@@ -32,14 +33,16 @@ When a remote user approaches the HotelService, the `preProcessUserHash` will
 - if `profile` is found, the `role` key within will dictate the process of
 constructing the User class name
 
+### if `username` does not exist
+`'allex'` will be used as the default username
+
 ### if `namespace` exists
-`allex__namespace_basenameroleservice
+`username__namespace_basenameroleservice`
 
 ### if `namespace` does not exist
-`allex_basenameroleservice
+`username_basenameroleservice`
 
 Mind the `namespace`, `basename` and `role` in the above strings. These are
 placeholders for the real values of `namespace`, `basename` and `role`.
 
-It is obvious that `basename` _should_ exist for real systems.
 
