@@ -35,8 +35,7 @@ function createAcquireUserServiceSink(execlib){
     );
   };
   AcquireUserServiceSinkTask.prototype.onAcquired = function(sink){
-    if (this.cb) {
-      this.cb(sink);
+    if (this.cb && this.sink) {
       if (!sink) {
         console.log('no sink?');
       } else {
@@ -44,6 +43,7 @@ function createAcquireUserServiceSink(execlib){
           sink.destroyed.attachForSingleShot(this.sink.destroy.bind(this.sink));
         }
       }
+      this.cb(sink);
     }
     this.destroy();
   };
