@@ -26,6 +26,7 @@ function createServiceUser(execlib,ParentUser){
     if (!usermodulename) {
       return q.reject(new lib.Error('LOGIN_NOT_ALLOWED', 'No apartment modulename for '+JSON.stringify(spawndescriptor)));
     }
+    lib.extend(spawndescriptor, this.__service.userprophash);
     spawndescriptor.__hotel = this.__service;
     return execSuite.start({
       service:{
